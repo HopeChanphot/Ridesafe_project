@@ -14,7 +14,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    # Create the service account key file directly in the workflow
+    # Directly create the service account key file with the provided JSON key
     - name: Create Service Account Key File
       run: |
         cat <<EOF > sa_key.json
@@ -22,7 +22,7 @@ jobs:
           "type": "service_account",
           "project_id": "ridesafe-443408",
           "private_key_id": "c1600c378b4838c8bdb0fa82974176e0ab9660c1",
-          "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCl+TStRXBk0+mV\niZ7bpkRJzazEbc4l/XANwO2LK4cyDMEP3mQiJnWG9eEKWz5W6wbZYrL2P1f/KWQx\n....\n-----END PRIVATE KEY-----\n",
+          "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCl+TStRXBk0+mV\niZ7bpkRJzazEbc4l/XANwO2LK4cyDMEP3mQiJnWG9eEKWz5W6wbZYrL2P1f/KWQx\nm3z/PvxEszt5cMUQw2jmQoaLBCIb1HBQYj5vK/xbIgHF7nWIENcLuB38EgsEm8MH\nFKuK0GRkqeWMsrMwZgTbUdoB71lEOhdxMalWuL10pRF1zJpoCMvUMgOgoCOvwc2S\nJd6FHaPHJYo8mw6vMRT2rO6kWn566Wh1AFOnoe6CYcG4dGXK6n3u+3bnqiwGdxRf\nqM8+CfuYm+h9iHrrGQc4+ESh6mJJYDH5oLKhW4iWZbPnylq1Fpsazs4CPElR38bH\n9BrjKrMtAgMBAAECggEAJVL/h5/AAMyvENPcB6VCYh6ApcPTwjNWSaGDSfLF+nln\nyTvH5O4lK+6LZxrR0BYWejh56mqgTV9visBewb/WV1S/ITY8+uIW6wE25HhPe1aw\n00Lkq3eGzq+9Glff0nOHCLmk9JTSKX0lxKffU949VW3nk1Z0eYPXv8KOdjTvLCpP\nasZIheaZ5B7fXgijqyiepL6VT9fDpFOqBZKx/b9vRNCXX5FbQME1lrDmx6v9sQ5j\nMXjghBPcFFuQgXzYVTEaHjstyZellUku2UuCRhKlK+h/RL2kl84l4SMFcv98hKKw\nEoM+273jGyeCUofbukTYGVQ6YdNTlbb86sUylAKkOQKBgQDVgEo2xu1YeTQPb0Ob\nx/co+c3icrGMwHspDY+lpkSrEW8Ow1ODEMywNxqJccLjbSIU2MMeSLi/xGO0k8TH\nLMDapXSgY+L66kL0nVH1J7vLPyPZCwEOi5uMGTV6X0X5Fc1dWcDt0W8xoie5VENI\nvM8QLMWMKFhjaEM+RD8Nr0TutwKBgQDHAvlit41r89HxF2JMntAwbh6dFw3mPqtQ\nQGoKT5+8o8oSjkjZ68j+t+LCJvnB8c+6uLCmbutnOc/4jxJRxaMi1G4RYsjojnw+\nAm236P0DqgCadLOoueflO5tZkCGWiQNpOM/eZgW4UAPMViOAIOpdABhosI32FVbe\nSsQj3fbJOwKBgG5oSHipSKYfD5gHvtu5fgw3movHKiASjd4+ABH2uL4KZvcodXBq\n6J8b7+Ix7Um07xH+wnBPxRKOWc1ROUqSzyyCsZwb6448ROHA1VhE8u15Om2MLkC6\nW3cItkoRKNtVtfzXZFjXnHv7UjWZ6K2dziqcLJB9cK//g/6YRk8qWyhjAoGBALUQ\nrKu3SvFcHbgXyXTizZIyrqHIdvn0LNPQN2p4NWJhNxoY4Il9MBsoXSS+Z2CgzJob\nLYXPx1fczq5cJZPGmH24/wfMc/S6pqmYdhDs5z6tLu1Ynpk1w5nZ2KbtLtISiMr0\nSJQVCME/86S2/oe16uWAj7S4ZgDuO2H2bmwfqEg/AoGAOnY7f99miQmEkqh/ytN0\n4n9SzUOw1cwMdAlKilBodbtKgEPLivVOhNO5JYHPCFej6YmQsLfVlaax7Y/IDrXk\njPxJhOqV/lEllHyvBibpHQqBooDE7Mf1UXQWISwA3dniE8T6Iks97gPOzzSOrBuZ\nEt+nK9RAty7qO5ku+8/sMBc=\n-----END PRIVATE KEY-----\n",
           "client_email": "wong-472@ridesafe-443408.iam.gserviceaccount.com",
           "client_id": "106706179221806356732",
           "auth_uri": "https://accounts.google.com/o/oauth2/auth",
@@ -39,25 +39,21 @@ jobs:
         gcloud auth activate-service-account --key-file=sa_key.json
         gcloud auth configure-docker gcr.io
 
-    # Debug step to verify authentication
-    - name: Verify GCloud Authentication
-      run: |
-        gcloud auth list
-
-    # Debug step to check IAM roles
-    - name: Check IAM Policy
-      run: |
-        gcloud projects get-iam-policy ridesafe-443408
-
     # Build Docker image for your Dash app
     - name: Build Docker image
       run: |
-        docker build -t gcr.io/ridesafe-443408/ride_safe_dashboard:${{ github.sha }} .
+        docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/ride_safe_dashboard:${{ github.sha }} .
 
     # Push Docker image to Google Container Registry
     - name: Push Docker image to Google Container Registry
       run: |
-        docker push gcr.io/ridesafe-443408/ride_safe_dashboard:${{ github.sha }}
+        docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/ride_safe_dashboard:${{ github.sha }}
 
-
-
+    # Deploy the Docker image to Google Cloud Run
+    - name: Deploy to Google Cloud Run
+      run: |
+        gcloud run deploy ride-safe-dashboard \
+          --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/ride_safe_dashboard:${{ github.sha }} \
+          --platform managed \
+          --region ${{ secrets.GCP_REGION }} \
+          --allow-unauthenticated
