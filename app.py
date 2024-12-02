@@ -214,5 +214,8 @@ def predict_bike_peak_hour(n_clicks, t1, pm25, hum):
 
 
 # Run the Dash app
+#if __name__ == "__main__":
+#    app.run_server(debug=True, host="0.0.0.0", port=8050)
 if __name__ == "__main__":
-    app.run_server(debug=True, host="0.0.0.0", port=8050)
+    port = int(os.environ.get("PORT", 8080))  # Get the PORT from environment variable, default to 8080
+    app.run_server(debug=True, host="0.0.0.0", port=port)
