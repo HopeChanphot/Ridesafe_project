@@ -18,23 +18,30 @@ jobs:
       uses: google-github-actions/setup-gcloud@v1
       with:
         project_id: ${{ secrets.GCP_PROJECT_ID }}
-        service_account_key: ${{ secrets.GCP_SA_KEY }}
         export_default_credentials: true
 
+    # Create the service account key file properly
+    - name: Create Service Account Key File
+      run: |
+        printf '%s' "${{ secrets.GCP_SA_KEY }}" > sa_key.json
+
+    # Authenticate Docker with GCR (Google Container Registry)
     - name: Authenticate Docker with GCR
       run: |
-        echo "${{ secrets.GCP_SA_KEY }}" > sa_key.json
         gcloud auth activate-service-account --key-file=sa_key.json
         gcloud auth configure-docker gcr.io
 
+    # Build Docker image for your Dash app
     - name: Build Docker image
       run: |
         docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/ride_safe_dashboard:${{ github.sha }} .
 
+    # Push Docker image to Google Container Registry
     - name: Push Docker image to Google Container Registry
       run: |
         docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/ride_safe_dashboard:${{ github.sha }}
 
+    # Deploy the Docker image to Google Cloud Run
     - name: Deploy to Google Cloud Run
       run: |
         gcloud run deploy ride-safe-dashboard \
@@ -42,4 +49,5 @@ jobs:
           --platform managed \
           --region ${{ secrets.GCP_REGION }} \
           --allow-unauthenticated
+
 
