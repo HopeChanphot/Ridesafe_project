@@ -23,7 +23,7 @@ jobs:
 
     - name: Create Service Account Key File
       run: |
-        printf '%s' "${{ secrets.GCP_SA_KEY }}" > sa_key.json
+        echo "${{ secrets.GCP_SA_KEY }}" > sa_key.json
 
     - name: Authenticate Docker with GCR
       run: |
@@ -45,4 +45,5 @@ jobs:
           --platform managed \
           --region ${{ secrets.GCP_REGION }} \
           --allow-unauthenticated
+
 
