@@ -209,7 +209,7 @@ def predict_bike_peak_hour(n_clicks, t1, pm25, hum):
         # Round predictions and display result
         y_pred_rounded = np.round(y_pred).astype(int)
 
-        return f"Predicted Bike Demand for Tomorrow ({(datetime.now().date() + timedelta(days=1)).strftime('%A, %B %d, %Y')}): {y_pred_rounded[0]} bikes"
+        return f" Predicted Bike Demand for Tomorrow ({(datetime.now().date() + timedelta(days=1)).strftime('%A, %B %d, %Y')}): {y_pred_rounded[0]} bikes"
     return ""
 
 
