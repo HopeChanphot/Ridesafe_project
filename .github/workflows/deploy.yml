@@ -1,0 +1,44 @@
+name: Deploy to Google Cloud Run
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Build and Deploy to Google Cloud Run
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Cloud SDK
+      uses: google-github-actions/setup-gcloud@v1
+      with:
+        project_id: ${{ secrets.GCP_PROJECT_ID }}
+        service_account_key: ${{ secrets.GCP_SA_KEY }}
+        export_default_credentials: true
+
+    - name: Authenticate Docker with GCR
+      run: |
+        echo "${{ secrets.GCP_SA_KEY }}" > sa_key.json
+        gcloud auth activate-service-account --key-file=sa_key.json
+        gcloud auth configure-docker gcr.io
+
+    - name: Build Docker image
+      run: |
+        docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/ride_safe_dashboard:${{ github.sha }} .
+
+    - name: Push Docker image to Google Container Registry
+      run: |
+        docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/ride_safe_dashboard:${{ github.sha }}
+
+    - name: Deploy to Google Cloud Run
+      run: |
+        gcloud run deploy ride-safe-dashboard \
+          --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/ride_safe_dashboard:${{ github.sha }} \
+          --platform managed \
+          --region ${{ secrets.GCP_REGION }} \
+          --allow-unauthenticated
