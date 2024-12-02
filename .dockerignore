@@ -1,0 +1,17 @@
+# Ignore Python cache files and directories
+__pycache__
+*.pyc
+
+# Ignore environment variable and sensitive files
+.env
+.git
+
+# Ignore IDE and editor configuration files
+.vscode/
+.idea/
+
+# Ignore the .git directory
+.git
+
+# Ignore temporary files created by the editor
+*~
